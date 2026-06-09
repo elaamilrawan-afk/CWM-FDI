@@ -1,0 +1,80 @@
+## CLI Commands:
+
+Ctrl + C to exit/cancel commands.
+
+## Simple Measurements - Idleness:
+
+ps
+
+ps aux
+
+htop -s PERCENT_CPU
+
+htop -s PERCENT_MEM
+
+
+## Resource Usage - Compute, Power and Thermals
+
+sudo turbostat
+
+sudo turbostat -i 1
+
+sudo turbostat --quiet --Summary
+
+
+sudo turbostat -q -S --show PkgWatt -i 1
+
+sudo turbostat -q -S --Joules --show Pkg_J -i 1
+
+
+# Monitor interesting counters (metrics)
+
+sudo turbostat -q -S --show Busy%,Bzy_MHz,PkgWatt,CorWatt,PkgTmp,CoreTmp -i 1 
+
+sudo turbostat -q -S --show Pkg%pc2,Pkg%pc3,Pkg%pc6,Pkg%pc7,Pkg%pc8,CPU%c1,CPU%c3,CPU%c6,CPU%c7 -i 1
+
+
+# Live plot of power/energy - use under the scripts folder: 
+
+bash plot_turbostat.sh
+
+#Long version of live plot of power:
+
+sudo stdbuf -oL turbostat -q -S --show PkgWatt -i 1 2>/dev/null | stdbuf -oL tail -n +2 | ttyplot -t 'Package Power (Watts)' -u 'W'
+
+# Long version of live plot of energy: 
+
+sudo stdbuf -oL turbostat -q -S --show Pkg_J -i 1 2>/dev/null | stdbuf -oL tail -n +2 | ttyplot -t 'Package Energy (J)' -u 'W'
+
+# Live plot stacking temperature & power: 
+
+sudo stdbuf -oL turbostat -q -S --show PkgTmp,PkgWatt -i 1 2>/dev/null | stdbuf -oL tail -n +2 | ttyplot -2 -t 'PkgTmp (C) - Thin / PkgWatt (W) - Thick'
+
+# Live plot stacking temperature & energy: 
+
+sudo stdbuf -oL turbostat -q -S -J --show PkgTmp,Pkg_J -i 1 2>/dev/null | stdbuf -oL tail -n +2 | ttyplot -2 -t 'PkgTmp (C) - Thin / Pkg_J (J) - Thick'
+
+# Running a command of your choice
+
+sudo turbostat -q -S --show PkgWatt [cmd_of_your_choice]
+
+sudo turbostat -q -S --Joules --show Pkg_J [cmd_of_your_choice]
+
+# E.g.:
+
+sudo turbostat -q -S --Joules --show Pkg_J stress-ng -c 4 --cpu-method matrixprod -t 20
+
+sudo turbostat -q -S --Joules --show Pkg_J python3 ../assignment1/matmul_slow.py 500
+
+sudo turbostat -q -S --Joules --show Pkg_J python3 ../assignment1/matmul_fast.py 500
+
+
+## Network Activity
+
+sudo lshw -class network
+
+sudo tdpdump -i [logical_network_name] -w background_traffic.pcap capinfos background_traffic.pcap
+
+
+
+
