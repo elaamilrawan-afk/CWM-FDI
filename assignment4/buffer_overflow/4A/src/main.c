@@ -47,9 +47,9 @@ void steal_password()
 }
 
 
-
 void append_address(char* buf, int i, uint64_t addr)
-{
+ {
+
     // buf: pointer to buffer space
     // i: offset from base of this buffer space
     // addr: the payload/evil function address
@@ -106,8 +106,11 @@ int main(int argc, char* argv[])
     char evil_str[128];
     for (int j = 0; j < 128; j++) evil_str[j] = 0x41;  // Fill entire buffer
     
-    append_address(evil_str, address_start_byte, function_addr);
-    // hexdump_arr(evil_str);   // Uncomment for debug
+ //   append_address(evil_str, address_start_byte, function_addr);
+// I added the following call instead
+    append_address(evil_str, 0, 0xdeadbeef);
+
+    hexdump_arr(evil_str);   // Uncomment for debug
 
     // Call the victim with normal input
     victim("0123456789ABCDE"); // Normal input of expected length == 16. No issues here
