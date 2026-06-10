@@ -5,7 +5,7 @@ It computes a simple O(n^3) multiplication with a checksum at the end
 so the computation has an observable result.
 
 """
-
+import time
 import sys
 from typing import List
 
@@ -27,13 +27,31 @@ def zero_matrix(n: int) -> Matrix:
 
 # Intentionally simple O(n^3) matrix multiplication.
 # This loop order is correct but cache-unfriendly for matrix B.
-def matmul_slow(a: Matrix, b: Matrix, c: Matrix, n: int) -> None:
+#def matmul_slow(a: Matrix, b: Matrix, c: Matrix, n: int) -> None:
+   # for i in range(n):
+       # for j in range(n):
+        #    total = 0.0
+         #   for k in range(n):
+          #      total += a[i][k] * b[k][j]
+           # c[i][j] = total
+# Annotated version of the code to measure the time required by the function
+# matmul_slow and the time required for calculating a single cell in the matrix.
+def matmul_slow(a: Matrix, b: Matrix, c: Matrix, n: int):
     for i in range(n):
         for j in range(n):
+
+            cell_start = time.perf_counter_ns()
+
             total = 0.0
             for k in range(n):
                 total += a[i][k] * b[k][j]
+
             c[i][j] = total
+
+            cell_end = time.perf_counter_ns()
+
+            if i == 0 and j == 0:
+                print(f"Single cell time: {(cell_end-cell_start)*1e6:.2f} us")
 
 
 def checksum(m: Matrix, n: int) -> float:
@@ -79,12 +97,20 @@ def main(argv: list[str]) -> int:
 
     c = zero_matrix(n)
 
+   # start = time.perf_counter()
+   # end = time.perf_counter()
+
+
+
     for _ in range(reps):
-        matmul_slow(a, b, c, n)
+      start = time.perf_counter_ns()    
+      matmul_slow(a, b, c, n)
+      end = time.perf_counter_ns()
 
     print(f"n={n} reps={reps} checksum={checksum(c, n):.6f}")
-    return 0
+    print(f"matmul_slow time: {end-start:.6f} seconds")
 
+    return 0
 
 if __name__ == "__main__":
     raise SystemExit(main(sys.argv))
